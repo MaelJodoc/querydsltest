@@ -11,7 +11,7 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 /**
  * Created by Смена on 01.07.2018.
  */
-public interface UserRepository extends
+public interface UserRepositoryQueryDsl extends
         JpaRepository<User, Integer>,
         QuerydslPredicateExecutor<User>,
         QuerydslBinderCustomizer<QUser> {

@@ -1,15 +1,14 @@
 package com.example.querydsltest.controller;
 
 import com.example.querydsltest.model.User;
-import com.example.querydsltest.repository.UserRepository;
+import com.example.querydsltest.repository.UserRepositoryQueryDsl;
+import com.example.querydsltest.repository.UserRepositoryWithRsqlJpa;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Created by Смена on 01.07.2018.
@@ -17,17 +16,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
-    private final UserRepository userRepository;
+    /* private final UserRepositoryQueryDsl userRepositoryQueryDsl;
+
+     @Autowired
+     public UserController(UserRepositoryQueryDsl userRepositoryQueryDsl) {
+         this.userRepositoryQueryDsl = userRepositoryQueryDsl;
+     }
+
+     @RequestMapping(method = RequestMethod.GET, value = "/users")
+     @ResponseBody
+     public Iterable<User> findAllByWebQuerydsl(
+             @QuerydslPredicate(root = User.class) Predicate predicate) {
+         return userRepositoryQueryDsl.findAll(predicate);
+     }*/
+    private final UserRepositoryWithRsqlJpa repository;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserRepositoryWithRsqlJpa repository) {
+        this.repository = repository;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/users")
+    @GetMapping(value = "/users")
     @ResponseBody
-    public Iterable<User> findAllByWebQuerydsl(
-            @QuerydslPredicate(root = User.class) Predicate predicate) {
-        return userRepository.findAll(predicate);
+    public List<User> getUsersByRequestParams(@RequestParam(value = "query") String query) {
+        System.out.println(query);
+        return repository.getUserByQueryString(query);
     }
 }
