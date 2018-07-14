@@ -8,7 +8,6 @@ import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,30 +16,35 @@ import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 /**
- * Created by Смена on 13.07.2018.
+ * Created by Смена on 14.07.2018.
  */
 @Repository
-interface UserRepositoryWithRsqlJpa extends JpaRepository<User, Integer> {
-
+public class UserRepository {
     private EntityManager entityManager;
+    private JpaRepository<User, Integer> jpaRepository;
+
 
     @Autowired
-    public UserRepositoryWithRsqlJpa(EntityManager entityManager) {
+    public UserRepository(EntityManager entityManager, JpaRepository jpaRepository) {
         this.entityManager = entityManager;
+        this.jpaRepository = jpaRepository;
     }
 
+    @Transactional
     public List<User> getUserByQueryString(String query) {
         RSQLVisitor<CriteriaQuery<User>, EntityManager> visitor = new JpaCriteriaQueryVisitor<>();
         Node root = new RSQLParser().parse(query);
         CriteriaQuery<User> criteriaQuery = root.accept(visitor, entityManager);
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        List<User> users = entityManager.createQuery(criteriaQuery).getResultList();
+        return users;
     }
 
     @Transactional
-    default void init() {
+    public void init() {
         User user = new User("John", "Doe", 30);
         Department department = new Department("sales");
         user.addDepartment(department);
-        entityManager.persist(user);
+        entityManager.persist(department);
+        jpaRepository.save(user);
     }
 }

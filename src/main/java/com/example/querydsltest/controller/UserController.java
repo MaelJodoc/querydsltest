@@ -1,11 +1,8 @@
 package com.example.querydsltest.controller;
 
 import com.example.querydsltest.model.User;
-import com.example.querydsltest.repository.UserRepositoryQueryDsl;
-import com.example.querydsltest.repository.UserRepositoryWithRsqlJpa;
-import com.querydsl.core.types.Predicate;
+import com.example.querydsltest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,10 +26,10 @@ public class UserController {
              @QuerydslPredicate(root = User.class) Predicate predicate) {
          return userRepositoryQueryDsl.findAll(predicate);
      }*/
-    private final UserRepositoryWithRsqlJpa repository;
+    private final UserRepository repository;
 
     @Autowired
-    public UserController(UserRepositoryWithRsqlJpa repository) {
+    public UserController(UserRepository repository) {
         this.repository = repository;
     }
 
@@ -40,6 +37,8 @@ public class UserController {
     @ResponseBody
     public List<User> getUsersByRequestParams(@RequestParam(value = "query") String query) {
         System.out.println(query);
-        return repository.getUserByQueryString(query);
+        List<User> users = repository.getUserByQueryString(query);
+        System.out.println(users);
+        return users;
     }
 }

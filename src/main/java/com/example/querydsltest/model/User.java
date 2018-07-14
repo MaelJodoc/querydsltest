@@ -1,6 +1,7 @@
 package com.example.querydsltest.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Fetch;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -23,6 +24,7 @@ public class User extends AbstractPersistable<Integer> {
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "departments_id", referencedColumnName = "id")
     )
+    @JsonManagedReference
     private List<Department> departments = new ArrayList<>();
 
     public User(String firstName, String lastName, Integer age) {
@@ -39,6 +41,10 @@ public class User extends AbstractPersistable<Integer> {
         if (department.getUsers().contains(this)) throw new RuntimeException("Department already contain this user");
         departments.add(department);
         department.getUsers().add(this);
+    }
+
+    public List<Department> getDepartments() {
+        return departments;
     }
 
     public String getFirstName() {

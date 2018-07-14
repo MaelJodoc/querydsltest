@@ -1,5 +1,6 @@
 package com.example.querydsltest.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import java.util.List;
 public class Department extends AbstractPersistable<Integer> {
     private String name;
     @ManyToMany(mappedBy = "departments")
+    @JsonBackReference
     private List<User> users = new ArrayList<>();
 
     public Department() {
